@@ -1,0 +1,27 @@
+{
+  "network": "Bradbury Phase 2",
+  "chainId": 4221,
+  "contract": "0x39344e1eb0F3A52C0091e3A2FF9c20FD1e888A91",
+  "wallet": "0xF10aB469555eb723d62A565217EE678A8C200526",
+  "transactions": [
+    {
+      "action": "deploy",
+      "txId": "0xfa8cee3bc0ab4cb7d6c97c7bbc22929998242d3e372a13f804ec8891dcfd7c63",
+      "status": "finalized",
+      "netCostGEN": "0.000141714100002117"
+    },
+    {
+      "action": "commit",
+      "txId": "0xa94aff56d711679f7815c292b01140a10bc58930157044b5b463f9bd52f41bea",
+      "status": "finalized",
+      "netCostGEN": "0.000084409470002117"
+    },
+    {
+      "action": "resolve",
+      "txId": "0x5aac26dfc6bad07f5d3cb802d18dfefc796ac569ad88936452cb2165193c139e",
+      "status": "finalized",
+      "netCostGEN": "0.000085097910001409"
+    }
+  ],
+  "netCostGEN": "0.000311221480005643"
+}

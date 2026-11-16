@@ -44,6 +44,16 @@ The second compatibility attempt used a low-level API shown in newer documentati
 
 Deployment and finalized demo receipts are published in `deployment.json` and `demo-result.json` after successful testnet execution. The demo uses two explicitly disjoint hour ranges, an unrelated weight and an approximate time. Expected outcome: bounded IDs 1/2, irrelevant ID 3, uncertain ID 4, conflict witnesses 2/1 at lower=30 and upper=24 hours.
 
+Verified final deployment on Bradbury Phase 2 (chain 4221): [`0x39344e1eb0F3A52C0091e3A2FF9c20FD1e888A91`](https://scan.bradbury.genlayer.com/address/0x39344e1eb0F3A52C0091e3A2FF9c20FD1e888A91). Record 1 is `resolved`; its conflict witnesses are IDs 2/1 with lower=30 and upper=24. IDs 3 and 4 were correctly excluded as irrelevant and uncertain. All three final transactions have FINALIZED / MAJORITY_AGREE / accepted / FINISHED_WITH_RETURN receipts, and the resulting state was independently read back.
+
+| Operation | Transaction | Net test GEN after final refund |
+|---|---|---|
+| Deploy | `0xfa8cee3bc0ab4cb7d6c97c7bbc22929998242d3e372a13f804ec8891dcfd7c63` | 0.000141714100002117 |
+| Commit evidence | `0xa94aff56d711679f7815c292b01140a10bc58930157044b5b463f9bd52f41bea` | 0.000084409470002117 |
+| Resolve | `0x5aac26dfc6bad07f5d3cb802d18dfefc796ac569ad88936452cb2165193c139e` | 0.000085097910001409 |
+
+One final full interaction (commit + resolve) used **0.000169507380003526 test GEN**; including its deployment, **0.000311221480005643**. Two superseded development attempts used **0.000616857260012349**. Total actual development outlay for this contribution was **0.000928078740017992 test GEN**. These are observed balance deltas from an otherwise idle test wallet, not fee estimates, future guarantees or real-token spending.
+
 ## Reuse
 
 Adapt the metric/unit and excerpts for builders checking incompatible published integer estimates, documentation constraints or service specifications. Preserve original quotations and expose uncertainty to downstream users. The primitive deliberately separates probabilistic extraction from deterministic interval algebra; a different extraction backend can reuse the same validation and witness computation.

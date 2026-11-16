@@ -1,0 +1,150 @@
+{
+  "wallet": "0xF10aB469555eb723d62A565217EE678A8C200526",
+  "contract": "0x39344e1eb0F3A52C0091e3A2FF9c20FD1e888A91",
+  "chainId": 4221,
+  "network": "Bradbury Phase 2",
+  "balanceGEN": "99.996968350369938611",
+  "netCostGEN": "0.000311221480005643",
+  "balanceChangeGEN": "0.000311221480005643",
+  "transactions": [
+    {
+      "action": "deploy",
+      "contract": "0x39344e1eb0F3A52C0091e3A2FF9c20FD1e888A91",
+      "startedAt": "2026-11-16T03:58:23.511Z",
+      "beforeWei": "99997279571849944254",
+      "feeDepositWei": "25000000000004235",
+      "status": "finalized",
+      "maxCostWei": "25166085300004235",
+      "evmHash": "0x76c261896af12e380cefdc88f90ff39ae54cdfac3d1c5c0b51ce2c9bba6b897f",
+      "txId": "0xfa8cee3bc0ab4cb7d6c97c7bbc22929998242d3e372a13f804ec8891dcfd7c63",
+      "finalizedAt": "2026-11-16T03:59:55.817Z",
+      "consensusResult": "MAJORITY_AGREE",
+      "outcome": "accepted",
+      "protocolStatus": "FINALIZED",
+      "executionResult": "FINISHED_WITH_RETURN",
+      "afterWei": "99997137857749942137",
+      "netCostWei": "141714100002117",
+      "netCostGEN": "0.000141714100002117",
+      "gasUsed": "7976610",
+      "gasPriceWei": "10000000",
+      "evmFeeWei": "79766100000000"
+    },
+    {
+      "action": "commit",
+      "contract": "0x39344e1eb0F3A52C0091e3A2FF9c20FD1e888A91",
+      "startedAt": "2026-11-16T04:00:59.446Z",
+      "beforeWei": "99997137857749942137",
+      "feeDepositWei": "25000000000004235",
+      "status": "finalized",
+      "maxCostWei": "25047405720004235",
+      "evmHash": "0x2cb664e88986b4548d026a13c839dd08eb42c16bb4388fe55be25c26584e2279",
+      "txId": "0xa94aff56d711679f7815c292b01140a10bc58930157044b5b463f9bd52f41bea",
+      "finalizedAt": "2026-11-16T04:02:32.372Z",
+      "consensusResult": "MAJORITY_AGREE",
+      "outcome": "accepted",
+      "protocolStatus": "FINALIZED",
+      "executionResult": "FINISHED_WITH_RETURN",
+      "afterWei": "99997053448279940020",
+      "netCostWei": "84409470002117",
+      "netCostGEN": "0.000084409470002117",
+      "gasUsed": "2251847",
+      "gasPriceWei": "10000000",
+      "evmFeeWei": "22518470000000"
+    },
+    {
+      "action": "resolve",
+      "contract": "0x39344e1eb0F3A52C0091e3A2FF9c20FD1e888A91",
+      "startedAt": "2026-11-16T04:02:36.773Z",
+      "beforeWei": "99997053448279940020",
+      "feeDepositWei": "25000000000004235",
+      "status": "finalized",
+      "maxCostWei": "25043050680004235",
+      "evmHash": "0x85332c208883e139a334b3890ecad49f127c9b55dfea3c52298a05fd64919962",
+      "txId": "0x5aac26dfc6bad07f5d3cb802d18dfefc796ac569ad88936452cb2165193c139e",
+      "finalizedAt": "2026-11-16T04:04:33.259Z",
+      "consensusResult": "MAJORITY_AGREE",
+      "outcome": "accepted",
+      "protocolStatus": "FINALIZED",
+      "executionResult": "FINISHED_WITH_RETURN",
+      "afterWei": "99996968350369938611",
+      "netCostWei": "85097910001409",
+      "netCostGEN": "0.000085097910001409",
+      "gasUsed": "2043866",
+      "gasPriceWei": "10000000",
+      "evmFeeWei": "20438660000000"
+    }
+  ],
+  "pending": false,
+  "total": 1,
+  "items": [
+    {
+      "excerpts": [
+        "Route A parcel transit time is 12 to 24 hours, inclusive.",
+        "Route A parcel transit time is 30 to 40 hours, inclusive.",
+        "The packaging weighs 200 grams.",
+        "Route A parcel transit time is approximately 20 hours."
+      ],
+      "id": "1",
+      "metric": "Parcel transit time for route A",
+      "owner": "0xF10aB469555eb723d62A565217EE678A8C200526",
+      "result": {
+        "intersection": {
+          "bounded_ids": [
+            1,
+            2
+          ],
+          "excluded_ids": [
+            3,
+            4
+          ],
+          "lower": 30,
+          "lower_witness": 2,
+          "status": "conflict",
+          "upper": 24,
+          "upper_witness": 1
+        },
+        "readings": [
+          {
+            "excerpt_sha256": "9de5e75aa371e9990251aa611b4a062121c354ad35ffe56aa5889bcfa46fbb69",
+            "id": 1,
+            "lower": 12,
+            "quote": "Route A parcel transit time is 12 to 24 hours, inclusive.",
+            "reason": "Independent extraction agreed on status and bounds.",
+            "status": "bounded",
+            "upper": 24
+          },
+          {
+            "excerpt_sha256": "fdcb755f8efbc7554a47f6ce0aa0359548bae4846c175ec7ff2bb4dab1c74f60",
+            "id": 2,
+            "lower": 30,
+            "quote": "Route A parcel transit time is 30 to 40 hours, inclusive.",
+            "reason": "Independent extraction agreed on status and bounds.",
+            "status": "bounded",
+            "upper": 40
+          },
+          {
+            "excerpt_sha256": "0dfb933c5c31e2512787477871e1ceb027678ade12804173a2b3bb88bd10a3e3",
+            "id": 3,
+            "lower": null,
+            "quote": "",
+            "reason": "Independent extraction agreed on status and bounds.",
+            "status": "irrelevant",
+            "upper": null
+          },
+          {
+            "excerpt_sha256": "6e6de49bfdd2c472254b929b1bedc668f3354ec333f81e0af1a168cb377da996",
+            "id": 4,
+            "lower": null,
+            "quote": "",
+            "reason": "Independent extraction agreed on status and bounds.",
+            "status": "uncertain",
+            "upper": null
+          }
+        ]
+      },
+      "snapshot_sha256": "ea16b526d58589b84d722c18dfb27e2439bccf47f77ff80f21d8dfc96fe75e49",
+      "status": "resolved",
+      "unit": "hours"
+    }
+  ]
+}
