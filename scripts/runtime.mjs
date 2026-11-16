@@ -1,7 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {createAccount, createClient, isSuccessful} from 'genlayer-js';
+import {createAccount, createClient} from 'genlayer-js';
+import {acceptedFinalReceipt as accepted} from './receipt-policy.mjs';
 import {testnetBradbury} from 'genlayer-js/chains';
 import {createPublicClient, http, formatEther, parseEther, keccak256} from 'viem';
 import {installRpcRouting, CHAIN_RPC, NODE_RPC} from './rpc.mjs';
@@ -9,9 +10,8 @@ import {installRpcRouting, CHAIN_RPC, NODE_RPC} from './rpc.mjs';
 export const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const statePath=path.join(ROOT,'logs/app-state.json');
 export const stringify=(x)=>JSON.stringify(x,(_,v)=>typeof v==='bigint'?v.toString():v,2);
-const deploymentPath=path.join(ROOT,'deployment.json');
-const publicDeployment=fs.existsSync(deploymentPath)?JSON.parse(fs.readFileSync(deploymentPath,'utf8')):{};
-export const state=fs.existsSync(statePath)?JSON.parse(fs.readFileSync(statePath,'utf8')):{version:1,contract:publicDeployment.contract??null,transactions:[]};
+// Published receipts are evidence, never a fresh user's signing/deployment ledger.
+export const state=fs.existsSync(statePath)?JSON.parse(fs.readFileSync(statePath,'utf8')):{version:1,contract:null,transactions:[]};
 export const save=()=>{fs.mkdirSync(path.dirname(statePath),{recursive:true});fs.writeFileSync(statePath+'.tmp',stringify(state));fs.renameSync(statePath+'.tmp',statePath);};
 const localKeyPath=fs.existsSync(path.join(ROOT,'pk.txt'))?path.join(ROOT,'pk.txt'):path.join(ROOT,'..','..','pk.txt');
 const key=fs.readFileSync(process.env.GENLAYER_PRIVATE_KEY_FILE || localKeyPath,'utf8').trim().replace(/^0x/,'');
@@ -36,7 +36,6 @@ const account={...signer,signTransaction:async(tx,options)=>{
 }};
 export const client=createClient({chain:testnetBradbury,endpoint:NODE_RPC,account});
 export const balance=()=>chainClient.getBalance({address});
-const accepted=(r)=>isSuccessful(r)&&r.resultName==='MAJORITY_AGREE'&&r.lifecycle?.outcome==='accepted';
 export async function verifyNetwork(){
   const [id,block,manager]=await Promise.all([chainClient.getChainId(),chainClient.getBlock({blockNumber:0n}),chainClient.readContract({address:testnetBradbury.consensusMainContract.address,abi:testnetBradbury.consensusMainContract.abi,functionName:'getAddressManager'})]);
   if(id!==4221||block.hash!=='0x17d89764d4f4f963158fc4c5e8f2cb670c2837740b35f37081c12860c3df97e4'||manager.toLowerCase()!=='0x3f71ae080bd6270a91dbcc7960d88797828538e0')throw new Error('Bradbury Phase 2 identity mismatch');

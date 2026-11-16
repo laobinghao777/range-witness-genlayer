@@ -21,5 +21,37 @@
       "status": "consensus_rejected",
       "netCostGEN": "0.000085352520001764"
     }
-  ]
+  ],
+  "secondAttempt": {
+    "transactions": [
+      {
+        "action": "deploy",
+        "txId": "0x382d70c54821d9688bc275e6cd6c2b88b2b189dee78921eb2a960d71c3214da7",
+        "status": "finalized",
+        "netCostGEN": "0.000141796310002117",
+        "consensusResult": "MAJORITY_AGREE",
+        "executionResult": "FINISHED_WITH_RETURN"
+      },
+      {
+        "action": "commit",
+        "txId": "0x926abdea83f3ac3c1c0fb665b37744e2f1fa77c3bffc323a1186bb255da1ed6d",
+        "status": "finalized",
+        "netCostGEN": "0.000084410730002117",
+        "consensusResult": "MAJORITY_AGREE",
+        "executionResult": "FINISHED_WITH_RETURN"
+      },
+      {
+        "action": "resolve",
+        "txId": "0xfc09fe22ad56993a8863b18c6d7da64e0cb6a73e26e7bcbe0847c7bb16ee6376",
+        "status": "execution_failed",
+        "netCostGEN": "0.000082326760002117",
+        "consensusResult": "MAJORITY_AGREE",
+        "executionResult": "FINISHED_WITH_ERROR"
+      }
+    ],
+    "reason": "Fixed SDK has no genlayer.vm.run_nondet_unsafe; all validators agreed on VM AttributeError. Replaced with supported strict_eq over validated canonical decisions.",
+    "netCostGEN": "0.000308533800006351",
+    "contract": "0x7ED8a8a826201E5c77a747fB3f7865E629006e98"
+  },
+  "totalSupersededCostGEN": "0.000616857260012349"
 }

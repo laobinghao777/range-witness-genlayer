@@ -93,17 +93,15 @@ DATA: """ + json.dumps({"metric": c["metric"], "unit": c["unit"], "excerpts": c[
         def extract() -> str:
             raw = gl.nondet.exec_prompt(prompt, response_format="json")
             data = json.loads(raw) if isinstance(raw, str) else raw
-            return json.dumps({"readings": self._validate(data, c)}, sort_keys=True, ensure_ascii=False)
-        def verify(leader_result) -> bool:
-            if not isinstance(leader_result, gl.vm.Return): return False
-            # Independently rerun semantic extraction, then compare decision fields in code.
-            # Both sides must separately pass quote-membership and complete-coverage checks.
-            try:
-                own = extract()
-                return self._decision(leader_result.calldata, c) == self._decision(own, c)
-            except Exception:
-                return False
-        raw = gl.vm.run_nondet_unsafe(extract, verify)
+            rows = self._validate(data, c)
+            # Canonicalize non-decision text AFTER validating the model's original quote.
+            # Store the whole committed excerpt as deterministic, inspectable evidence.
+            for r in rows:
+                r["quote"] = c["excerpts"][r["id"] - 1] if r["status"] == "bounded" else ""
+                r["reason"] = "Independent extraction agreed on status and bounds."
+            return json.dumps({"readings": rows}, sort_keys=True, ensure_ascii=False)
+        # Supported by this contract's pinned SDK; avoids a second subjective LLM comparison.
+        raw = gl.eq_principle.strict_eq(extract)
         rows = self._validate(json.loads(raw), c)
         for r in rows:
             r["excerpt_sha256"] = hashlib.sha256(c["excerpts"][r["id"] - 1].encode()).hexdigest()

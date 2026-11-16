@@ -13,7 +13,11 @@ def run_nondet(leader,validator):
  if not validator(Return(value)):raise E('Validator rejected')
  return value
 gl.message=types.SimpleNamespace(sender_address=sender);gl.vm=types.SimpleNamespace(UserError=E,Return=Return,run_nondet_unsafe=run_nondet);gl.public=types.SimpleNamespace(write=lambda f:f,view=lambda f:f)
-gl.nondet=types.SimpleNamespace(exec_prompt=lambda *a,**k:answer);gl.eq_principle=types.SimpleNamespace(prompt_comparative=lambda f,p:f())
+def strict_eq(f):
+ a=f();b=f()
+ if a!=b:raise E('Independent extraction disagreed')
+ return a
+gl.nondet=types.SimpleNamespace(exec_prompt=lambda *a,**k:json.loads(json.dumps(answer)));gl.eq_principle=types.SimpleNamespace(strict_eq=strict_eq)
 gt=types.ModuleType('genlayer.types');gt.u256=int;sys.modules['genlayer']=gl;sys.modules['genlayer.types']=gt
 spec=importlib.util.spec_from_file_location('range_contract',Path(__file__).parent/'contract.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
 def bounded(i,lo,hi,q):return dict(id=i,status='bounded',lower=lo,upper=hi,quote=q,reason='Exact range for the committed metric and unit')
@@ -79,7 +83,27 @@ class Tests(unittest.TestCase):
   c=self.c._load('1');a=json.dumps(answer);answer['readings'][0]['lower']=13;self.assertNotEqual(self.c._decision(a,c),self.c._decision(json.dumps(answer),c))
  def test_independent_validator_called(self):
   calls=[];old=gl.nondet.exec_prompt
-  gl.nondet.exec_prompt=lambda *a,**k:(calls.append(1) or answer)
+  gl.nondet.exec_prompt=lambda *a,**k:(calls.append(1) or json.loads(json.dumps(answer)))
   try:self.result();self.assertEqual(len(calls),2)
+  finally:gl.nondet.exec_prompt=old
+ def test_independent_prose_variation_accepts(self):
+  calls=[];old=gl.nondet.exec_prompt
+  def varying(*a,**k):
+   rows=json.loads(json.dumps(answer));calls.append(1)
+   if len(calls)==2:rows['readings'][0]['reason']='Different valid wording';rows['readings'][0]['quote']='12 to 24 hours.'
+   return rows
+  gl.nondet.exec_prompt=varying
+  try:self.assertEqual(self.result()['intersection']['status'],'overlap')
+  finally:gl.nondet.exec_prompt=old
+ def test_independent_bound_disagreement_rejects(self):
+  calls=[];old=gl.nondet.exec_prompt
+  def varying(*a,**k):
+   rows=json.loads(json.dumps(answer));calls.append(1)
+   if len(calls)==2:rows['readings'][0]['lower']=13
+   return rows
+  gl.nondet.exec_prompt=varying
+  try:
+   with self.assertRaises(E):self.c.resolve('1')
+   self.assertEqual(self.c._load('1')['status'],'committed')
   finally:gl.nondet.exec_prompt=old
 if __name__=='__main__':unittest.main()
