@@ -6,7 +6,13 @@ class Contract:
   x=super().__new__(cls);x.cases={};return x
 sender=types.SimpleNamespace(as_hex='owner');answer={}
 gl=types.ModuleType('genlayer');gl.contract=types.SimpleNamespace(Contract=Contract);gl.storage=types.SimpleNamespace(TreeMap=dict)
-gl.message=types.SimpleNamespace(sender_address=sender);gl.vm=types.SimpleNamespace(UserError=E);gl.public=types.SimpleNamespace(write=lambda f:f,view=lambda f:f)
+class Return:
+ def __init__(self,value):self.calldata=value
+def run_nondet(leader,validator):
+ value=leader()
+ if not validator(Return(value)):raise E('Validator rejected')
+ return value
+gl.message=types.SimpleNamespace(sender_address=sender);gl.vm=types.SimpleNamespace(UserError=E,Return=Return,run_nondet_unsafe=run_nondet);gl.public=types.SimpleNamespace(write=lambda f:f,view=lambda f:f)
 gl.nondet=types.SimpleNamespace(exec_prompt=lambda *a,**k:answer);gl.eq_principle=types.SimpleNamespace(prompt_comparative=lambda f,p:f())
 gt=types.ModuleType('genlayer.types');gt.u256=int;sys.modules['genlayer']=gl;sys.modules['genlayer.types']=gt
 spec=importlib.util.spec_from_file_location('range_contract',Path(__file__).parent/'contract.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
@@ -67,4 +73,13 @@ class Tests(unittest.TestCase):
   answer['readings'][0]['upper']=10
   with self.assertRaises(E):self.c.resolve('1')
   self.assertEqual(json.loads(self.c.get_case('1'))['status'],'committed')
+ def test_decisions_ignore_prose(self):
+  c=self.c._load('1');a=json.dumps(answer);answer['readings'][0]['reason']='Another explanation';answer['readings'][0]['quote']='12 to 24 hours.';self.assertEqual(self.c._decision(a,c),self.c._decision(json.dumps(answer),c))
+ def test_decisions_reject_changed_number(self):
+  c=self.c._load('1');a=json.dumps(answer);answer['readings'][0]['lower']=13;self.assertNotEqual(self.c._decision(a,c),self.c._decision(json.dumps(answer),c))
+ def test_independent_validator_called(self):
+  calls=[];old=gl.nondet.exec_prompt
+  gl.nondet.exec_prompt=lambda *a,**k:(calls.append(1) or answer)
+  try:self.result();self.assertEqual(len(calls),2)
+  finally:gl.nondet.exec_prompt=old
 if __name__=='__main__':unittest.main()

@@ -68,6 +68,10 @@ class RangeWitness(gl.contract.Contract):
         return {**out, "status": "overlap" if low["lower"] <= high["upper"] else "conflict",
             "lower": low["lower"], "upper": high["upper"], "lower_witness": low["id"], "upper_witness": high["id"]}
 
+    def _decision(self, raw: str, c: dict) -> list:
+        rows = self._validate(json.loads(raw), c)
+        return [[r["id"], r["status"], r["lower"], r["upper"]] for r in rows]
+
     @gl.public.write
     def resolve(self, key: str) -> None:
         c = self._load(key)
@@ -90,8 +94,16 @@ DATA: """ + json.dumps({"metric": c["metric"], "unit": c["unit"], "excerpts": c[
             raw = gl.nondet.exec_prompt(prompt, response_format="json")
             data = json.loads(raw) if isinstance(raw, str) else raw
             return json.dumps({"readings": self._validate(data, c)}, sort_keys=True, ensure_ascii=False)
-        raw = gl.eq_principle.prompt_comparative(extract,
-            "Every id, status, lower and upper must agree exactly. Each quote must be a valid original substring supporting the same metric, unit and bounds; reason wording may differ. Exclusions and uncertainty must agree.")
+        def verify(leader_result) -> bool:
+            if not isinstance(leader_result, gl.vm.Return): return False
+            # Independently rerun semantic extraction, then compare decision fields in code.
+            # Both sides must separately pass quote-membership and complete-coverage checks.
+            try:
+                own = extract()
+                return self._decision(leader_result.calldata, c) == self._decision(own, c)
+            except Exception:
+                return False
+        raw = gl.vm.run_nondet_unsafe(extract, verify)
         rows = self._validate(json.loads(raw), c)
         for r in rows:
             r["excerpt_sha256"] = hashlib.sha256(c["excerpts"][r["id"] - 1].encode()).hexdigest()

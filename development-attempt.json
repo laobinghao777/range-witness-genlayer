@@ -1,0 +1,25 @@
+{
+  "reason": "Original comparative-template resolve reached FINALIZED but MAJORITY_DISAGREE / undetermined; committed state was unchanged. Replaced with independent extraction and deterministic decision-field comparison.",
+  "contract": "0xF7d569f34b07CE5Ec7e28517C535eB599eA62465",
+  "netCostGEN": "0.000308323460005998",
+  "transactions": [
+    {
+      "action": "deploy",
+      "txId": "0xc461daa29ed9f474e693d0eac103725095fb41910dc3daaffd978f89df1e3f4c",
+      "status": "finalized",
+      "netCostGEN": "0.000138560090002117"
+    },
+    {
+      "action": "commit",
+      "txId": "0xe1bcc3f3fc9b408304a4b0119d8fb29feb32570095725dfb1a538f2046f11a51",
+      "status": "finalized",
+      "netCostGEN": "0.000084410850002117"
+    },
+    {
+      "action": "resolve",
+      "txId": "0xbcc24031ce8a360891d32a50905331bbd7a91b4d3c368bc3b499cc92319bc8ad",
+      "status": "consensus_rejected",
+      "netCostGEN": "0.000085352520001764"
+    }
+  ]
+}

@@ -36,6 +36,7 @@ const account={...signer,signTransaction:async(tx,options)=>{
 }};
 export const client=createClient({chain:testnetBradbury,endpoint:NODE_RPC,account});
 export const balance=()=>chainClient.getBalance({address});
+const accepted=(r)=>isSuccessful(r)&&r.resultName==='MAJORITY_AGREE'&&r.lifecycle?.outcome==='accepted';
 export async function verifyNetwork(){
   const [id,block,manager]=await Promise.all([chainClient.getChainId(),chainClient.getBlock({blockNumber:0n}),chainClient.readContract({address:testnetBradbury.consensusMainContract.address,abi:testnetBradbury.consensusMainContract.abi,functionName:'getAddressManager'})]);
   if(id!==4221||block.hash!=='0x17d89764d4f4f963158fc4c5e8f2cb670c2837740b35f37081c12860c3df97e4'||manager.toLowerCase()!=='0x3f71ae080bd6270a91dbcc7960d88797828538e0')throw new Error('Bradbury Phase 2 identity mismatch');
@@ -58,20 +59,21 @@ async function finish(record){
   const receipt=await client.waitForFinalization({hash:record.txId,interval:5000,retries:120,fullTransaction:true});
   fs.writeFileSync(path.join(ROOT,`logs/receipt-${record.txId}.json`),stringify(receipt));
   record.finalizedAt=new Date().toISOString();
-  record.status=isSuccessful(receipt)?'finalized':'execution_failed';
+  record.status=accepted(receipt)?'finalized':'execution_failed';
+  record.consensusResult=receipt.resultName;record.outcome=receipt.lifecycle?.outcome;
   record.protocolStatus=receipt.statusName;record.executionResult=receipt.txExecutionResultName;
   const after=await balance();record.afterWei=after.toString();record.netCostWei=(BigInt(record.beforeWei)-after).toString();record.netCostGEN=formatEther(BigInt(record.netCostWei));
   if(record.evmHash){
     const evm=await chainClient.getTransactionReceipt({hash:record.evmHash});
     record.gasUsed=evm.gasUsed.toString();record.gasPriceWei=evm.effectiveGasPrice.toString();record.evmFeeWei=(evm.gasUsed*evm.effectiveGasPrice).toString();
   }
-  if(record.action==='deploy' && isSuccessful(receipt)){
+  if(record.action==='deploy' && accepted(receipt)){
     state.contract=receipt.txDataDecoded?.contractAddress??receipt.recipient;
     if(!/^0x[0-9a-f]{40}$/i.test(state.contract??'')||/^0x0{40}$/i.test(state.contract))throw new Error('Deployment has no valid contract address');
     record.contract=state.contract;
   }
   state.lastBalanceWei=after.toString();state.pending=null;save();
-  if(!isSuccessful(receipt))throw new Error(`Execution failed: ${record.protocolStatus}/${record.executionResult}`);
+  if(!accepted(receipt))throw new Error(`Consensus/execution rejected: ${record.consensusResult}/${record.outcome}/${record.executionResult}`);
   console.log(`${record.action}: finalized, net ${record.netCostGEN} GEN`);
   return record;
 }
