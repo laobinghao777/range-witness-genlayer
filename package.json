@@ -1,0 +1,1 @@
+{"name":"range-witness-genlayer","private":true,"type":"module","scripts":{"test":"python tests.py","deploy":"node scripts/run.mjs deploy","demo":"node demo.mjs"},"dependencies":{"genlayer-js":"2.0.0-rc.2","viem":"2.38.5"}}
